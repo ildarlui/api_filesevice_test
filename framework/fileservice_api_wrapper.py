@@ -3,7 +3,7 @@ from pip._vendor import requests
 
 from framework.fileservice_data_generator import DocumentDataGenerator, TemplateDataGenerator
 
-BASE_API_URL = 'http://fileservice-low-p2-fileservice.kubernetes.moduldev.ru'
+BASE_API_URL = 'URL'
 
 
 class APIDocument:
