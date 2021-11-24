@@ -30,44 +30,43 @@ class APIDocumentTests(TestCase):
     def test_getting_signature_info(self):
         """"Проверяем что возвращается информация о подписи"""
         files = self.api_file.get_file_signature_sig()
-        documentId = self.new_document['data']
-        add_signature = self.api_document.add_signature_for_document_fileservice(files, documentId)
-        signatureId = add_signature.json()['data']
-        signature_info = self.api_document.get_signature_info(documentId, signatureId)
-        self.assertEqual(signature_info['data']['id'], signatureId)
-        self.assertEqual(signature_info['data']['documentId'], documentId)
+        document_id = self.new_document['data']
+        add_signature = self.api_document.add_signature_for_document_fileservice(files, document_id)
+        signature_id = add_signature.json()['data']
+        signature_info = self.api_document.get_signature_info(document_id, signature_id)
+        self.assertEqual(signature_info['data']['id'], signature_id)
+        self.assertEqual(signature_info['data']['document_id'], document_id)
 
     def test_add_signature_for_document(self):
         """"Проверяем что загруженная подпись прикрепляется к документу"""
         files = self.api_file.get_file_signature_sig()
         add_signature = self.api_document.add_signature_for_document_fileservice(files, self.new_document['data'])
-        signatureId = add_signature.json()['data']
-        signature_info = self.api_document.get_signature_info(self.new_document['data'], signatureId)
-        self.assertEqual(signature_info['data']['id'], signatureId)
+        signature_id = add_signature.json()['data']
+        signature_info = self.api_document.get_signature_info(self.new_document['data'], signature_id)
+        self.assertEqual(signature_info['data']['id'], signature_id)
         self.assertEqual(signature_info['data']['documentId'], self.new_document['data'])
-
 
     def test_add_signature_from_file_for_document(self):
         """"Проверяем что подпись из файлов прикрепляется к документу"""
         file = self.api_file.get_file_signature_sig()
-        fileId = self.api_files.add_file_fileservice(file)['data']
-        payload = {'signatureFileId': f'{fileId}'}
-        documentId = self.new_document['data']
-        add_signature = self.api_document.add_signature_from_files_for_document_fileservice(payload, documentId)
-        signatureId = add_signature.json()['data']
+        file_id = self.api_files.add_file_fileservice(file)['data']
+        payload = {'signatureFileId': f'{file_id}'}
+        document_id = self.new_document['data']
+        add_signature = self.api_document.add_signature_from_files_for_document_fileservice(payload, document_id)
+        signature_id = add_signature.json()['data']
         document_info = self.api_document.get_document_fileservice(self.new_document['data'])
-        print(type(signatureId))
-        self.assertEqual(document_info['data']['id'], documentId)
-        self.assertIn(signatureId, document_info['data']['signatureIds'])
+        print(type(signature_id))
+        self.assertEqual(document_info['data']['id'], document_id)
+        self.assertIn(signature_id, document_info['data']['signatureIds'])
 
     def test_delete_signature(self):
         """"Проверяем что подпись удаляется из документа"""
         file = self.api_file.get_file_signature_sig()
-        fileId = self.api_files.add_file_fileservice(file)['data']
-        payload = {'signatureFileId': f'{fileId}'}
-        documentId = self.new_document['data']
-        signatureId = self.api_document.add_signature_from_files_for_document_fileservice(payload, documentId).json()['data']
-        self.api_document.delete_signature_from_files_for_document_fileservice(documentId, signatureId)
+        file_id = self.api_files.add_file_fileservice(file)['data']
+        payload = {'signatureFileId': f'{file_id}'}
+        document_id = self.new_document['data']
+        signature_id = self.api_document.add_signature_from_files_for_document_fileservice(payload, document_id).json()['data']
+        self.api_document.delete_signature_from_files_for_document_fileservice(document_id, signature_id)
         document_info = self.api_document.get_document_fileservice(self.new_document['data'])
         self.assertNotIn('signatureIds', document_info['data'])
 
@@ -77,10 +76,10 @@ class APIDocumentTests(TestCase):
         downloads_document = self.api_document.downloads_nginx(url_downloads['data'])
         self.assertEqual(downloads_document.status_code, 200)
         print(url_downloads['data'])
-        dowloads_url_data_test = f"/{self.main_payload.bucket.lower()}/{self.main_payload.entityType.lower()}/" \
+        downloads_url_data_test = f"/{self.main_payload.bucket.lower()}/{self.main_payload.entityType.lower()}/" \
                f"{self.main_payload.entityArea.lower()}/{Constants_FS.ENITITY_ID.replace('-', '')}/"
         #Вставить id
-        self.assertIn(dowloads_url_data_test, url_downloads['data'])
+        self.assertIn(downloads_url_data_test, url_downloads['data'])
 
     def test_downloads_document(self):
         """"Проверяем что документ скачивается """
